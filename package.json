@@ -1,0 +1,16 @@
+{
+  "name": "com.utj.malioc.plugin",
+  "description": "Getting Shader performance via malioc",
+  "version": "0.1.0",
+  "unity": "2019.3",
+  "unityRelease": "2f1",
+  "displayName": "Malioc Plugin",
+  "dependencies": {
+  },
+  "keywords": [
+    "graphics",
+    "performance",
+    "mali",
+    "mobile"
+  ]
+}
