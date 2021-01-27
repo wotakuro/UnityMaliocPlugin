@@ -11,12 +11,19 @@ namespace UTJ.MaliocPlugin
     public class ProcessUtil
     {
 
-        public static string CallMaliShaderOfflineCompiler(string file) {
+        public static string CallMaliShaderOfflineCompiler(string file,bool jsonFormat) {
             string output = null;
             using (Process process = new Process())
             {
                 process.StartInfo.FileName = "malioc";
-                process.StartInfo.Arguments = file +" --format json";
+                if (jsonFormat)
+                {
+                    process.StartInfo.Arguments = file + " --format json";
+                }
+                else
+                {
+                    process.StartInfo.Arguments = file + " --format text";
+                }
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.Start();

@@ -24,7 +24,7 @@ namespace UTJ.MaliocPlugin.UI
                 var compiled = CompileShaderUtil.GetCompileShaderText(shader);
                 var parser = new CompiledShaderParser(compiled);
                 parser.DumpToFile();
-                res = ProcessUtil.CallMaliShaderOfflineCompiler("Dump/0.frag");
+                res = ProcessUtil.CallMaliShaderOfflineCompiler("Dump/0.frag",false);
             }
             if (!string.IsNullOrEmpty(res))
             {
