@@ -4,19 +4,12 @@ using UnityEngine;
 using UnityEditor;
 using System.Diagnostics;
 using System.IO;
+using UTJ.MaliocPlugin.Result;
 
 namespace UTJ.MaliocPlugin
 {
-    public class ProcessHelper
+    public class ProcessUtil
     {
-        [MenuItem("Tools/Process")]
-        public static void Test()
-        {
-            string result = CallMaliShaderOfflineCompiler("Dump/1.vert");
-
-            // Write the redirected output to this application's window.
-            UnityEngine.Debug.Log(result);
-        }
 
         public static string CallMaliShaderOfflineCompiler(string file) {
             string output = null;

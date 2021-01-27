@@ -25,6 +25,7 @@ namespace UTJ.MaliocPlugin
 
         private List<ShaderProgram> programs = new List<ShaderProgram>();
 
+
         public CompiledShaderParser(string str)
         {
             int index = str.IndexOf(GLOBAL_KEYWORD, 0);
@@ -37,9 +38,13 @@ namespace UTJ.MaliocPlugin
                 this.programs.Add(shaderProgram);
                 index = nextIdx;
             }
-            DumpToFile();
+        }
+        public List<ShaderProgram> GetShaderPrograms()
+        {
+            return programs;
         }
 
+        // todo debug
         public void DumpToFile()
         {
             Directory.CreateDirectory("Dump");

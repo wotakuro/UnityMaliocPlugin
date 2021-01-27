@@ -8,16 +8,7 @@ namespace UTJ.MaliocPlugin
 {
     public class CompileShaderUtil
     {
-        
-        [MenuItem("Tools/Item")]
-        public static void Test()
-        {
-            var shader = Shader.Find("Hidden/Universal Render Pipeline/Blit");
-            var str = GetCompileShaderText(shader);
-            File.WriteAllText("hoge.txt", str);
-            var obj = new CompiledShaderParser(str);
-        }
-
+       
         public static string GetCompileShaderText(Shader shader)
         {
             CompiledShader(shader);
