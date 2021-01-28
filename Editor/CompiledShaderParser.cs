@@ -44,22 +44,6 @@ namespace UTJ.MaliocPlugin
             return programs;
         }
 
-        // todo debug
-        public void DumpToFile()
-        {
-            Directory.CreateDirectory("Dump");
-            int idx = 0;
-            StringBuilder sb = new StringBuilder();
-            foreach( var p in programs)
-            {
-                sb.Append(idx).Append("\n  ").Append(p.globalKeyword).
-                    Append("\n  ").Append(p.localKeyword).Append("\n");
-                File.WriteAllText("Dump/" + idx + ".vert", p.vertShader);
-                File.WriteAllText("Dump/" + idx + ".frag", p.fragShader);
-                ++idx;
-            }
-            File.WriteAllText("Dump/info.txt", sb.ToString());
-        }
 
         private ShaderProgram CreateShaderProgram(string str,int startIdx,int nextIdx)
         {

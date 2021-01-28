@@ -24,6 +24,7 @@ namespace UTJ.MaliocPlugin
                 {
                     process.StartInfo.Arguments = file + " --format text";
                 }
+                process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.Start();

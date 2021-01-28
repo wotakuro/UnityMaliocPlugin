@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UTJ.MaliocPlugin.Result;
+using UTJ.MaliocPlugin.DB;
 
 namespace UTJ.MaliocPlugin.UI
 {
@@ -23,8 +25,8 @@ namespace UTJ.MaliocPlugin.UI
             {
                 var compiled = CompileShaderUtil.GetCompileShaderText(shader);
                 var parser = new CompiledShaderParser(compiled);
-                parser.DumpToFile();
-                res = ProcessUtil.CallMaliShaderOfflineCompiler("Dump/0.frag",false);
+
+                ShaderDbUtil.Create(shader, parser);
             }
             if (!string.IsNullOrEmpty(res))
             {

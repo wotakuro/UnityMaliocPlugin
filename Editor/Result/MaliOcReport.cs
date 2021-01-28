@@ -81,6 +81,34 @@ namespace UTJ.MaliocPlugin.Result
         public string name;
         [SerializeField]
         public string value;
+
+        public int GetValueAsInt()
+        {
+            int val = 0;
+            int.TryParse(this.value, out val);
+            return val;
+        }
+        public bool GetValueAsBool()
+        {
+            if(this.value == "true")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static PropertyInfo GetByName(PropertyInfo[] props,string name)
+        {
+            if(props == null) { return null; }
+            foreach( var prop in props)
+            {
+                if(prop != null && prop.name == name)
+                {
+                    return prop;
+                }
+            }
+            return null;
+        }
     }
     [Serializable]
     public class ShaderAPIReport
@@ -108,6 +136,21 @@ namespace UTJ.MaliocPlugin.Result
         public ShaderPerformanceReport performance;
         [SerializeField]
         public PropertyInfo[] properties;
+
+        public static int GetIndexByName(ShaderVariantsReport[] variants,string name)
+        {
+            if(variants == null) { return -1; }
+            int length = variants.Length;
+            for (int i = 0; i < length; ++i)
+            {
+                if(variants[i] != null && 
+                    variants[i].name == name)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
     [Serializable]
