@@ -23,8 +23,8 @@ namespace UTJ.MaliocPlugin.DB
             CreateCompiledFiles(dir, compiledShaderParser);
             for( int i = 0; i < programs.Count; ++i)
             {
-                var vertJson = ProcessUtil.CallMaliShaderOfflineCompiler(dir + "/" + i + ".vert", true);
-                var fragJson = ProcessUtil.CallMaliShaderOfflineCompiler(dir + "/" + i + ".frag", true);
+                var vertJson = MaliocPluginUtility.CallMaliShaderOfflineCompiler(dir + "/" + i + ".vert", true);
+                var fragJson = MaliocPluginUtility.CallMaliShaderOfflineCompiler(dir + "/" + i + ".frag", true);
                 var vertResult = MaliOcReport.CreateFromJson(vertJson);
                 var fragResult = MaliOcReport.CreateFromJson(fragJson);
                 var shaderProgramInfo = ShaderProgramInfo.Create( vertResult , fragResult);
