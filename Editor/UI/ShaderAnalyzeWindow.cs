@@ -28,6 +28,17 @@ namespace UTJ.MaliocPlugin.UI
 
                 ShaderDbUtil.Create(shader, parser);
             }
+
+            if (GUILayout.Button("DebugKeyword"))
+            {
+                var keywords = MaliocPluginUtility.GetShaderCurrentKeyword(shader);
+
+                res = "Keyword:";
+                foreach( var keyword in keywords)
+                {
+                    res += keyword + "\n";
+                }
+            }
             if (!string.IsNullOrEmpty(res))
             {
                 EditorGUILayout.TextArea(res);

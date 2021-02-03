@@ -8,6 +8,7 @@ using UTJ.MaliocPlugin.Result;
 using System.Reflection;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser.CSharp;
+using System.Text;
 
 namespace UTJ.MaliocPlugin
 {
@@ -16,16 +17,19 @@ namespace UTJ.MaliocPlugin
 
         public static string CallMaliShaderOfflineCompiler(string file,bool jsonFormat) {
             string output = null;
+            StringBuilder sb = new StringBuilder(file.Length + 32);
             using (Process process = new Process())
             {
                 process.StartInfo.FileName = "malioc";
                 if (jsonFormat)
                 {
-                    process.StartInfo.Arguments = file + " --format json";
+                    sb.Append("\"").Append(file).Append("\" --format json");
+                    process.StartInfo.Arguments = sb.ToString();
                 }
                 else
                 {
-                    process.StartInfo.Arguments = file + " --format text";
+                    sb.Append("\"").Append(file).Append("\" --format text");
+                    process.StartInfo.Arguments = sb.ToString();
                 }
                 process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.UseShellExecute = false;
@@ -71,23 +75,23 @@ namespace UTJ.MaliocPlugin
             return true;
         }
 
-        public static List<string> GetCurrentMaterialKeywords(Material mat)
+        public static List<string> GetMaterialCurrentKeyword(Material mat)
         {
             if (mat.shader == null) { return null; }
-            var list = GetCurrentShaderKeyword(mat.shader);
+            var list = GetShaderCurrentKeyword(mat.shader);
             list.AddRange(mat.shaderKeywords);
             return list;
         }
 
-        public static List<string> GetCurrentShaderKeyword(Shader shader)
+        public static List<string> GetShaderCurrentKeyword(Shader shader)
         {
             var enableKeywords = GetAllEnableKeywords();
             var result = new List<string>();
-            GetCurrentShaderKeyword(result, shader, enableKeywords);
+            GetShaderCurrentKeyword(result, shader, enableKeywords);
             return result;
         }
 
-        public static void GetCurrentShaderKeyword(List<string> result,
+        public static void GetShaderCurrentKeyword(List<string> result,
             Shader shader,
             List<string> enableKeywords)
         {

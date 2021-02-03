@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using ICSharpCode.NRefactory.Ast;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -22,12 +23,23 @@ namespace UTJ.MaliocPlugin
             public string vertShader;
             public string fragShader;
         }
+        // PassInfo
+        public struct PassInfo
+        {
+            public int index;
+            public int strPos;
+            public string name;
+            public string tags;
+        }
+
+        private List<PassInfo> passInfos = new List<PassInfo>();
 
         private List<ShaderProgram> programs = new List<ShaderProgram>();
 
 
         public CompiledShaderParser(string str)
         {
+            this.CreatePassInfos(str);
             int index = str.IndexOf(GLOBAL_KEYWORD, 0);
             int length = str.Length;
             while( index < length)
@@ -39,6 +51,85 @@ namespace UTJ.MaliocPlugin
                 index = nextIdx;
             }
         }
+
+        private void CreatePassInfos(string str)
+        {
+            string passStr = "Pass {";
+            int idx = str.IndexOf(passStr) ;
+            while(idx < str.Length){
+                idx = CreatePassInfos(str, idx);
+                idx = str.IndexOf(passStr,idx);
+                if(idx < 0) { break; }
+            }
+        }
+        private int CreatePassInfos(string str,int idx)
+        {
+            int length = str.Length;
+            // skip first line
+            idx = GetLineEndIdx(str, idx);
+            idx = SkipTrimChars(str, idx);
+            while( idx < length)
+            {
+                int nextIdx = idx;
+                if( IsMatch(str, idx, "////", out nextIdx) ){
+                    idx = nextIdx;
+                    break;
+                }
+                if (IsMatch(str, idx, "Name", out nextIdx))
+                {
+                    idx = nextIdx;
+                    nextIdx = GetLineEndIdx(str, idx);
+                    Debug.Log("Name::::" + str.Substring(idx, nextIdx - idx));
+
+                    idx = SkipTrimChars(str, nextIdx);
+                }
+                else if (IsMatch(str, idx, "Tags", out nextIdx))
+                {
+                    idx = nextIdx;
+                    nextIdx = GetLineEndIdx(str, idx);
+                    Debug.Log("Tags::::" + str.Substring(idx, nextIdx - idx));
+                    idx = SkipTrimChars(str, nextIdx);
+                }
+                else
+                {
+                    // next 
+                    idx = GetLineEndIdx(str, idx);
+                    idx = SkipTrimChars(str, idx);
+                }
+            }
+            return idx;
+        }
+        private int GetLineEndIdx(string str, int idx)
+        {
+            int length = str.Length;
+            int startIdx = idx;
+            for(;idx < length; ++idx)
+            {
+                if(str[idx] == '\n' || str[idx] == '\r')
+                {
+                    break;
+                }
+            }
+            return idx;
+        }
+        private int SkipTrimChars(string str,int idx)
+        {
+            int length = str.Length;
+            for (; idx < length; ++idx)
+            {
+                if (str[idx] != '\n' &&
+                    str[idx] != '\r' &&
+                    str[idx] != '\t' &&
+                    str[idx] != ' ' )
+                {
+                    break;
+                }
+            }
+            return idx;
+
+        }
+
+
         public List<ShaderProgram> GetShaderPrograms()
         {
             return programs;
