@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using UTJ.MaliocPlugin.Result;
 using System.Reflection;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser.CSharp;
 using System.Text;
 
 namespace UTJ.MaliocPlugin

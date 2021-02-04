@@ -15,9 +15,12 @@ namespace UTJ.MaliocPlugin.DB
         [SerializeField]
         public string shaderName;
         [SerializeField]
+        public List<PassInformation> passInfos;
+        [SerializeField]
         public List<ShaderKeywordInfo> keywordInfos;
         [SerializeField]
         public List<ShaderProgramInfo> programInfos;
+
         [NonSerialized]
         public Dictionary<ShaderKeywordInfo, ShaderProgramInfo> performanceInfoByKeyword;
 
@@ -25,11 +28,50 @@ namespace UTJ.MaliocPlugin.DB
         {
             if (keywordInfos == null) { keywordInfos = new List<ShaderKeywordInfo>(); }
             if (programInfos == null) { programInfos = new List<ShaderProgramInfo>(); }
+            if (performanceInfoByKeyword == null) { performanceInfoByKeyword = new Dictionary<ShaderKeywordInfo, ShaderProgramInfo>(); }
+
             keywordInfos.Add(info);
             programInfos.Add(programInfo);
+
+            performanceInfoByKeyword.Add(info, programInfo);
         }
 
-        public void CreateDictionary()
+        public void AddPassInfo(string name , string tags)
+        {
+            if(passInfos == null) { passInfos = new List<PassInformation>(); }
+            string tagsSearch = "\"LIGHTMODE\"=\"";
+            int tagSearchLength = tagsSearch.Length;
+            var info = new PassInformation();
+            if (name != null)
+            {
+                info.name = name.Replace("\"", "").Trim();
+            }
+            else
+            {
+                info.name = null;
+            }
+            if (tags != null)
+            {
+                int lightModeIdx = tags.IndexOf(tagsSearch);
+
+                if (lightModeIdx >= 0)
+                {
+                    int closePoint = tags.IndexOf('\"', lightModeIdx + tagSearchLength + 1);
+                    if (closePoint > 0)
+                    {
+                        info.lightMode = tags.Substring(lightModeIdx + tagSearchLength,
+                            closePoint - lightModeIdx - tagSearchLength );
+                    }
+                }
+                else
+                {
+                    info.lightMode = "";
+                }
+            }
+            passInfos.Add(info);
+        }
+
+        private void CreateDictionary()
         {
             if(keywordInfos == null) { return; }
             if(performanceInfoByKeyword == null) { performanceInfoByKeyword = new Dictionary<ShaderKeywordInfo, ShaderProgramInfo>(); }
@@ -52,9 +94,21 @@ namespace UTJ.MaliocPlugin.DB
                 return null;
             }
             string str = File.ReadAllText(path);
-            return JsonUtility.FromJson<ShaderInfo>(str);
+            var obj =  JsonUtility.FromJson<ShaderInfo>(str);
+            obj.CreateDictionary();
+            return obj;
         }
     }
+
+    [Serializable]
+    public class PassInformation
+    {
+        [SerializeField]
+        public string name;
+        [SerializeField]
+        public string lightMode;
+    }
+
 
     [Serializable]
     public class ShaderKeywordInfo
@@ -63,6 +117,8 @@ namespace UTJ.MaliocPlugin.DB
         public string globalKeyword;
         [SerializeField]
         public string localKeyword;
+        [SerializeField]
+        public int passIndex;
 
         public override bool Equals(object obj)
         {
@@ -72,11 +128,12 @@ namespace UTJ.MaliocPlugin.DB
                 return false;
             }
             return (this.globalKeyword == keyInfo.globalKeyword) &&
-                (this.localKeyword == keyInfo.localKeyword );
+                (this.localKeyword == keyInfo.localKeyword) &&
+                (this.passIndex == keyInfo.passIndex);
         }
         public override int GetHashCode()
         {
-            return globalKeyword.GetHashCode() + localKeyword.GetHashCode();
+            return globalKeyword.GetHashCode() + localKeyword.GetHashCode() + passIndex;
         }
 
     }
