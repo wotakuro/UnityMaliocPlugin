@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 using UTJ.MaliocPlugin.Result;
 
@@ -21,24 +22,34 @@ namespace UTJ.MaliocPlugin.DB
             var passInfos = compiledShaderParser.GetPassInfos();
 
             string dir = Path.Combine(COMPILED_FILE_PATH, shader.name);
+
             // create compile files
-            CreateCompiledFiles(dir, compiledShaderParser);
-            for( int i = 0; i < programs.Count; ++i)
+            EditorUtility.DisplayProgressBar("Analyzing", "Analyze ShaderProgram", 0.0f);
+            try
             {
-                var vertJson = MaliocPluginUtility.CallMaliShaderOfflineCompiler(dir + "/" + i + ".vert", true);
-                var fragJson = MaliocPluginUtility.CallMaliShaderOfflineCompiler(dir + "/" + i + ".frag", true);
-                var vertResult = MaliOcReport.CreateFromJson(vertJson);
-                var fragResult = MaliOcReport.CreateFromJson(fragJson);
-                var shaderProgramInfo = ShaderProgramInfo.Create( vertResult , fragResult);
+                CreateCompiledFiles(dir, compiledShaderParser);
+                for (int i = 0; i < programs.Count; ++i)
+                {
+                    EditorUtility.DisplayProgressBar("Analyzing", "Analyze ShaderProgram", i / (float)programs.Count);
 
-                var key = new ShaderKeywordInfo();
-                key.globalKeyword = programs[i].globalKeyword;
-                key.localKeyword = programs[i].localKeyword;
-                key.passIndex = programs[i].passInfoIdx;
-                info.AddProgramInfo(key,shaderProgramInfo);
+                    var vertJson = MaliocPluginUtility.CallMaliShaderOfflineCompiler(dir + "/" + i + ".vert", true);
+                    var fragJson = MaliocPluginUtility.CallMaliShaderOfflineCompiler(dir + "/" + i + ".frag", true);
+                    var vertResult = MaliOcReport.CreateFromJson(vertJson);
+                    var fragResult = MaliOcReport.CreateFromJson(fragJson);
+                    var shaderProgramInfo = ShaderProgramInfo.Create(vertResult, fragResult);
+
+                    var key = new ShaderKeywordInfo();
+                    key.globalKeyword = programs[i].globalKeyword;
+                    key.localKeyword = programs[i].localKeyword;
+                    key.passIndex = programs[i].passInfoIdx;
+                    info.AddProgramInfo(key, shaderProgramInfo);
+                }
+            }catch(System.Exception e)
+            {
             }
+            EditorUtility.ClearProgressBar();
 
-            for( int i = 0; i < passInfos.Count; ++i)
+            for ( int i = 0; i < passInfos.Count; ++i)
             {
                 info.AddPassInfo(passInfos[i].name, passInfos[i].tags);
             }

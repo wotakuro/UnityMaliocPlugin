@@ -4,6 +4,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UTJ.MaliocPlugin.DB;
+using ShaderInfo = UTJ.MaliocPlugin.DB.ShaderInfo;
 
 namespace UTJ.MaliocPlugin.UI
 {
@@ -11,7 +12,6 @@ namespace UTJ.MaliocPlugin.UI
     {
 
         private Material mat;
-        private string res;
         private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
         private ScrollView resultArea;
 
@@ -43,12 +43,22 @@ namespace UTJ.MaliocPlugin.UI
         private void OnClickAnalyzeBtn()
         {
             this.resultArea.Clear();
-            SetResult();
+            if( mat == null || mat.shader == null)
+            {
+                return;
+            }
+            var data = ShaderDbUtil.LoadShaderData(mat.shader);
+            if( data == null)
+            {
+                var compiled = CompileShaderUtil.GetCompileShaderText(mat.shader);
+                var parser = new CompiledShaderParser(compiled);
+                data = ShaderDbUtil.Create(mat.shader, parser);
+            }
+            SetResult(data);
         }
 
-        private void SetResult()
+        private void SetResult(ShaderInfo data)
         {
-            var data = ShaderDbUtil.LoadShaderData(mat.shader);
             if (data != null)
             {
                 var keywords = MaliocPluginUtility.GetMaterialCurrentKeyword(mat);
@@ -60,7 +70,6 @@ namespace UTJ.MaliocPlugin.UI
                     var info = data.GetProgramInfo(key);
                     var ve = ShaderInfolElement.Create(key, info, data.GetPassInfos());
                     this.resultArea.Add(ve);
-                    // info.positionVertPerf);
                 }
             }
          }

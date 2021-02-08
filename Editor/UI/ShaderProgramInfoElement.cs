@@ -113,7 +113,12 @@ namespace UTJ.MaliocPlugin.UI
             for (int i = 0; i < val.GetLength(0); ++i)
             {
                 VisualElement column = new VisualElement();
-                SetVisualBorder(column, 2, Color.white);
+                var borderFlag = BorderFlag.Bottom | BorderFlag.Top | BorderFlag.Right;
+                if(i == 0)
+                {
+                    borderFlag |= BorderFlag.Left;
+                }
+                SetVisualBorder(column, 2, Color.white, borderFlag);
                 for (int j = 0; j < val.GetLength(1); ++j)
                 {
                     var label = new Label(val[i, j]);
@@ -121,6 +126,9 @@ namespace UTJ.MaliocPlugin.UI
                     label.style.paddingLeft = 5;
                     label.style.minWidth = 40;
                     column.Add(label);
+                    if (j != 0) {
+                        SetVisualBorder(label, 1, Color.white, BorderFlag.Top);
+                    }
                 }
                 table.Add(column);
             }
@@ -128,15 +136,28 @@ namespace UTJ.MaliocPlugin.UI
         }
 
 
-        private void SetVisualBorder(VisualElement ve, int size, Color col)
+        private void SetVisualBorder(VisualElement ve, int size, Color col, BorderFlag borderFlag)
         {
-            ve.style.borderBottomWidth = ve.style.borderTopWidth =
-            ve.style.borderLeftWidth = ve.style.borderRightWidth = size;
-
-            ve.style.borderLeftColor = ve.style.borderRightColor =
-                ve.style.borderBottomColor = ve.style.borderTopColor =
-                col;
-
+            if (borderFlag.HasFlag(BorderFlag.Top))
+            {
+                ve.style.borderTopWidth = size;
+                ve.style.borderTopColor = col;
+            }
+            if (borderFlag.HasFlag(BorderFlag.Bottom))
+            {
+                ve.style.borderBottomWidth = size;
+                ve.style.borderBottomColor = col;
+            }
+            if (borderFlag.HasFlag(BorderFlag.Left))
+            {
+                ve.style.borderLeftWidth = size;
+                ve.style.borderLeftColor = col;
+            }
+            if (borderFlag.HasFlag(BorderFlag.Right))
+            {
+                ve.style.borderRightWidth = size;
+                ve.style.borderRightColor = col;
+            }
         }
     }
 }

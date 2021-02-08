@@ -19,8 +19,12 @@ namespace UTJ.MaliocPlugin
        
         public static string GetCompileShaderText(Shader shader,bool includeAllVariant=false)
         {
-            CompiledShader(shader, includeAllVariant);
-            var path = GetCompiledShaderPath(shader);
+            string path;
+            using (var scope = new DummyEditorOpenScope())
+            {
+                CompiledShader(shader, includeAllVariant);
+                path = GetCompiledShaderPath(shader);
+            }
 
             return File.ReadAllText(path);
         }
