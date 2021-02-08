@@ -1,9 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using UnityEditor;
-using UTJ.MaliocPlugin.DB;
+using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
+using UTJ.MaliocPlugin.DB;
 
 namespace UTJ.MaliocPlugin.UI
 {
@@ -13,6 +13,7 @@ namespace UTJ.MaliocPlugin.UI
         private Material mat;
         private string res;
         private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
+        private ScrollView resultArea;
 
         [MenuItem("Tools/MaterialAnalyze")]
         public static void Create()
@@ -22,43 +23,44 @@ namespace UTJ.MaliocPlugin.UI
 
         private void OnEnable()
         {
-            this.rootVisualElement.Add(new IMGUIContainer(this.OnGUITest));
+            var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.utj.malioc.plugin/Editor/UI/UXML/MaterialView.uxml");
+            var ve = asset.CloneTree();
+            var objectFiled = ve.Q<ObjectField>("SelectMaterial");
+            objectFiled.objectType = typeof(Material);
+            objectFiled.RegisterValueChangedCallback(OnSetMaterial);
+            var btn = ve.Q<Button>("AnalyzeBtn");
+            btn.clickable.clicked += OnClickAnalyzeBtn;
+
+            this.resultArea = ve.Q<ScrollView>("ResultArea");
+
+            this.rootVisualElement.Add(ve);
+        }
+        private void OnSetMaterial(ChangeEvent<Object> evt)
+        {
+            this.mat = evt.newValue as Material;
         }
 
-        private void OnGUITest()
+        private void OnClickAnalyzeBtn()
         {
-            mat = EditorGUILayout.ObjectField(mat, typeof(Material), true) as Material;
+            this.resultArea.Clear();
+            SetResult();
+        }
 
-            if (GUILayout.Button("DebugKeyword"))
+        private void SetResult()
+        {
+            var data = ShaderDbUtil.LoadShaderData(mat.shader);
+            if (data != null)
             {
                 var keywords = MaliocPluginUtility.GetMaterialCurrentKeyword(mat);
+                programKeyInfo.Clear();
+                data.GetShaderMatchPrograms(programKeyInfo, keywords);
 
-                res = "Keyword:";
-                foreach (var keyword in keywords)
+                foreach (var key in programKeyInfo)
                 {
-                    res += keyword + "\n";
-                }
-            }
-            if (!string.IsNullOrEmpty(res))
-            {
-                EditorGUILayout.TextArea(res);
-            }
-            if (GUILayout.Button("Visual"))
-            {
-                var data = ShaderDbUtil.LoadShaderData(mat.shader);
-                if( data != null)
-                {
-                    var keywords = MaliocPluginUtility.GetMaterialCurrentKeyword(mat);
-                    programKeyInfo.Clear();
-                    data.GetShaderMatchPrograms(programKeyInfo, keywords);
-
-                    foreach( var key in programKeyInfo)
-                    {
-                        var info = data.GetProgramInfo(key);
-                        var ve = ShaderInfolElement.Create(key,info,data.GetPassInfos());
-                        this.rootVisualElement.Add(ve);
-                       // info.positionVertPerf);
-                    }
+                    var info = data.GetProgramInfo(key);
+                    var ve = ShaderInfolElement.Create(key, info, data.GetPassInfos());
+                    this.resultArea.Add(ve);
+                    // info.positionVertPerf);
                 }
             }
          }

@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <uie:ObjectField label="Select Material" name="SelectMaterial" />
+    <ui:Button text="Analyze" name="AnalyzeBtn" style="width: 80px; white-space: nowrap; flex-direction: column;" />
+    <ui:ScrollView name="ResultArea" />
+</ui:UXML>
