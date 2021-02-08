@@ -8,7 +8,7 @@ using UTJ.MaliocPlugin.Result;
 
 namespace UTJ.MaliocPlugin.DB
 {
-    public class ShaderDbUtil : MonoBehaviour
+    public class ShaderDbUtil 
     {
         private static readonly string COMPILED_FILE_PATH = "Library/com.utj.malioc.plugin/compiled/";
         private static readonly string DB_FILE_PATH = "Library/com.utj.malioc.plugin/db/";
@@ -47,6 +47,13 @@ namespace UTJ.MaliocPlugin.DB
             info.SaveToFile( Path.Combine(DB_FILE_PATH, 
                 shader.name.Replace('/', '_')+".json") );
             return info;
+        }
+
+        public static ShaderInfo LoadShaderData(Shader shader)
+        {
+            string path = Path.Combine(DB_FILE_PATH,
+                shader.name.Replace('/', '_') + ".json");
+            return ShaderInfo.LoadFromFile(path);
         }
 
         private static void CreateCompiledFiles(string dir,CompiledShaderParser compiledShaderParser)

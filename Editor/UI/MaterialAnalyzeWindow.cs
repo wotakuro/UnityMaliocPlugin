@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UTJ.MaliocPlugin.DB;
+using UnityEngine.UIElements;
 
 namespace UTJ.MaliocPlugin.UI
 {
@@ -10,6 +12,7 @@ namespace UTJ.MaliocPlugin.UI
 
         private Material mat;
         private string res;
+        private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
 
         [MenuItem("Tools/MaterialAnalyze")]
         public static void Create()
@@ -17,7 +20,12 @@ namespace UTJ.MaliocPlugin.UI
             EditorWindow.GetWindow<MaterialAnalyzeWindow>();
         }
 
-        private void OnGUI()
+        private void OnEnable()
+        {
+            this.rootVisualElement.Add(new IMGUIContainer(this.OnGUITest));
+        }
+
+        private void OnGUITest()
         {
             mat = EditorGUILayout.ObjectField(mat, typeof(Material), true) as Material;
 
@@ -35,6 +43,24 @@ namespace UTJ.MaliocPlugin.UI
             {
                 EditorGUILayout.TextArea(res);
             }
-        }
+            if (GUILayout.Button("Visual"))
+            {
+                var data = ShaderDbUtil.LoadShaderData(mat.shader);
+                if( data != null)
+                {
+                    var keywords = MaliocPluginUtility.GetMaterialCurrentKeyword(mat);
+                    programKeyInfo.Clear();
+                    data.GetShaderMatchPrograms(programKeyInfo, keywords);
+
+                    foreach( var key in programKeyInfo)
+                    {
+                        var info = data.GetProgramInfo(key);
+                        var ve = ShaderInfolElement.Create(key,info,data.GetPassInfos());
+                        this.rootVisualElement.Add(ve);
+                       // info.positionVertPerf);
+                    }
+                }
+            }
+         }
     }
 }

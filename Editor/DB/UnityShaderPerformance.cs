@@ -98,6 +98,40 @@ namespace UTJ.MaliocPlugin.DB
             obj.CreateDictionary();
             return obj;
         }
+
+
+        public void GetShaderMatchPrograms(List<ShaderKeywordInfo>  result,
+            List<string> keywords)
+        {
+            foreach (var kvs in performanceInfoByKeyword) {
+                var keyInfo = kvs.Key;
+                var isMatch = MaliocPluginUtility.IsMatchKeyword(keyInfo.globalKeyword, keyInfo.localKeyword, keywords);
+                if(isMatch)
+                {
+                    result.Add(kvs.Key);
+                }
+            }
+        }
+        public ShaderProgramInfo GetProgramInfo(ShaderKeywordInfo key)
+        {
+            ShaderProgramInfo val;
+            if(this.performanceInfoByKeyword.TryGetValue(key,out val)){
+                return val;
+            }
+            return null;
+        }
+
+        public PassInformation GetPassInfo(int idx)
+        {
+            if (passInfos != null) { return null; }
+            if (idx < 0 || this.passInfos.Count >= idx) { return null; }
+            return passInfos[idx];
+        }
+        public List<PassInformation> GetPassInfos()
+        {
+            return passInfos;
+        }
+
     }
 
     [Serializable]

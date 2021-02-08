@@ -44,20 +44,39 @@ namespace UTJ.MaliocPlugin
         }
 
 
-        public bool IsMatchKeyword( string globalKeyword,string localKeyword,List<string> keywords)
+        public static bool IsMatchKeyword( string globalKeyword,string localKeyword,List<string> keywords)
         {
             // todo optimize
-            var globals = globalKeyword.Split(' ');
-            var locals = localKeyword.Split(' ');
-            int count = globals.Length + locals.Length;
+            globalKeyword = globalKeyword.Replace("<none>", "").Trim();
+            localKeyword = localKeyword.Replace("<none>", "").Trim();
+            string[] globals = null;// globalKeyword.Split(' ');
+            string[] locals = null;// localKeyword.Split(' ');
+
+            int count = 0;
+            if (globalKeyword.Length != 0)
+            {
+                globals = globalKeyword.Split(' ');
+                count += globals.Length;
+            }
+            if (localKeyword.Length != 0)
+            {
+                locals = localKeyword.Split(' ');
+                count += locals.Length;
+            }
 
             if ( count != keywords.Count)
             {
                 return false;
             }
             var list = new List<string>(count);
-            list.AddRange(globals);
-            list.AddRange(locals);
+            if (globals != null)
+            {
+                list.AddRange(globals);
+            }
+            if (locals != null)
+            {
+                list.AddRange(locals);
+            }
 
             list.Sort();
             keywords.Sort();
