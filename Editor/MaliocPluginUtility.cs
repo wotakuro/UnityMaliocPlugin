@@ -7,6 +7,7 @@ using System.IO;
 using UTJ.MaliocPlugin.Result;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 
 namespace UTJ.MaliocPlugin
 {
@@ -96,7 +97,17 @@ namespace UTJ.MaliocPlugin
         {
             if (mat.shader == null) { return null; }
             var list = GetShaderCurrentKeyword(mat.shader);
-            list.AddRange(mat.shaderKeywords);
+
+            var globalKeywords = GetShaderGlobalKeywords(mat.shader);
+            var localKeywords = GetShaderLocalKeywords(mat.shader);
+
+            foreach (var keyword in mat.shaderKeywords)
+            {
+                if (globalKeywords.Contains(keyword) || localKeywords.Contains(keyword))
+                {
+                    list.Add(keyword);
+                }
+            }
             return list;
         }
 

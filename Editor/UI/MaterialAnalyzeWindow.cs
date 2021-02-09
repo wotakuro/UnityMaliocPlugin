@@ -15,7 +15,7 @@ namespace UTJ.MaliocPlugin.UI
         private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
         private ScrollView resultArea;
 
-        [MenuItem("Tools/MaterialAnalyze")]
+        [MenuItem("Tools/MaliocPlugin/MaterialAnalyze")]
         public static void Create()
         {
             EditorWindow.GetWindow<MaterialAnalyzeWindow>();
@@ -42,7 +42,6 @@ namespace UTJ.MaliocPlugin.UI
 
         private void OnClickAnalyzeBtn()
         {
-            this.resultArea.Clear();
             if( mat == null || mat.shader == null)
             {
                 return;
@@ -59,6 +58,7 @@ namespace UTJ.MaliocPlugin.UI
 
         private void SetResult(ShaderInfo data)
         {
+            this.resultArea.Clear();
             if (data != null)
             {
                 var keywords = MaliocPluginUtility.GetMaterialCurrentKeyword(mat);
@@ -70,6 +70,14 @@ namespace UTJ.MaliocPlugin.UI
                     var info = data.GetProgramInfo(key);
                     var ve = ShaderInfolElement.Create(key, info, data.GetPassInfos());
                     this.resultArea.Add(ve);
+                }
+                if(programKeyInfo.Count == 0)
+                {
+                    this.resultArea.Add(new Label("Not Found.. Keyword:"));
+                    foreach (var keyword in keywords)
+                    {
+                        this.resultArea.Add(new Label(keyword));
+                    }
                 }
             }
          }
