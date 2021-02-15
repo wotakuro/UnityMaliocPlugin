@@ -9,9 +9,10 @@ namespace UTJ.MaliocPlugin
         private static readonly string DummyAppPath = "Library/com.utj.malioc.plugin/DummyApplication.exe";
         public DummyEditorOpenScope()
         {
+            string dummyExePath = InitDummyExe();
             str = EditorPrefs.GetString("kScriptsDefaultApp");
             EditorPrefs.SetString("kScriptsDefaultApp.backup", str);
-            EditorPrefs.SetString("kScriptsDefaultApp",InitDummyExe());
+            EditorPrefs.SetString("kScriptsDefaultApp", dummyExePath);
         }
 
         public void Dispose()
