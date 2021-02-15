@@ -53,7 +53,10 @@ namespace UTJ.MaliocPlugin.UI
                 var parser = new CompiledShaderParser(compiled);
                 data = ShaderDbUtil.Create(mat.shader, parser);
             }
-            SetResult(data);
+            if (data != null)
+            {
+                SetResult(data);
+            }
         }
 
         private void SetResult(ShaderInfo data)

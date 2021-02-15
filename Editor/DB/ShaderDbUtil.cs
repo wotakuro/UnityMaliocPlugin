@@ -44,8 +44,11 @@ namespace UTJ.MaliocPlugin.DB
                     key.passIndex = programs[i].passInfoIdx;
                     info.AddProgramInfo(key, shaderProgramInfo);
                 }
-            }catch(System.Exception e)
+            }catch(System.ComponentModel.Win32Exception e)
             {
+                EditorUtility.ClearProgressBar();
+                EditorUtility.DisplayDialog("malioc not found", "please install ARM Mobile studio. or make to malioc path correct.", "OK");
+                return null;
             }
             EditorUtility.ClearProgressBar();
 
