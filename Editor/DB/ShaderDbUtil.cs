@@ -14,9 +14,9 @@ namespace UTJ.MaliocPlugin.DB
         private static readonly string COMPILED_FILE_PATH = "Library/com.utj.malioc.plugin/compiled/";
         private static readonly string DB_FILE_PATH = "Library/com.utj.malioc.plugin/db/";
 
-        public static ShaderInfo Create(Shader shader,CompiledShaderParser compiledShaderParser)
+        public static AnalyzedShaderInfo Create(Shader shader,CompiledShaderParser compiledShaderParser)
         {
-            ShaderInfo info = new ShaderInfo();
+            AnalyzedShaderInfo info = new AnalyzedShaderInfo();
             info.shaderName = shader.name;
             var programs = compiledShaderParser.GetShaderPrograms();
             var passInfos = compiledShaderParser.GetPassInfos();
@@ -63,11 +63,11 @@ namespace UTJ.MaliocPlugin.DB
             return info;
         }
 
-        public static ShaderInfo LoadShaderData(Shader shader)
+        public static AnalyzedShaderInfo LoadShaderData(Shader shader)
         {
             string path = Path.Combine(DB_FILE_PATH,
                 shader.name.Replace('/', '_') + ".json");
-            return ShaderInfo.LoadFromFile(path);
+            return AnalyzedShaderInfo.LoadFromFile(path);
         }
 
         private static void CreateCompiledFiles(string dir,CompiledShaderParser compiledShaderParser)

@@ -111,6 +111,22 @@ namespace UTJ.MaliocPlugin
             return list;
         }
 
+        public static List<string> KeywordStrToList(string str)
+        {
+            List<string> keywords = new List<string>();
+            if(str == null)
+            {
+                return keywords;
+            }
+            str = str.Trim();
+            if (string.IsNullOrEmpty(str))
+            {
+                return keywords;
+            }
+            keywords.AddRange(str.Split(' '));
+            return keywords;
+        }
+
         public static List<string> GetShaderCurrentKeyword(Shader shader)
         {
             var enableKeywords = GetAllEnableKeywords();

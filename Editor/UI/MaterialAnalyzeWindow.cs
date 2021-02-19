@@ -4,7 +4,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UTJ.MaliocPlugin.DB;
-using ShaderInfo = UTJ.MaliocPlugin.DB.ShaderInfo;
+using AnalyzedShaderInfo = UTJ.MaliocPlugin.DB.AnalyzedShaderInfo;
 
 namespace UTJ.MaliocPlugin.UI
 {
@@ -59,7 +59,7 @@ namespace UTJ.MaliocPlugin.UI
             }
         }
 
-        private void SetResult(ShaderInfo data)
+        private void SetResult(AnalyzedShaderInfo data)
         {
             this.resultArea.Clear();
             if (data != null)

@@ -3,30 +3,153 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
+using UnityEngine.UIElements;
+using UTJ.MaliocPlugin.DB;
+using UnityEditor.UIElements;
 
 namespace UTJ.MaliocPlugin.UI
 {
     public class FrameDebugAnalyzeWindow : EditorWindow
     {
+        private int currentPosition;
+        private int resultPosition;
+
+        private ScrollView resultArea;
+        private Button analyzeBtn;
+        private ObjectField shaderField;
+
+
+        private Dictionary<Shader, AnalyzedShaderInfo> shaderInfos;
+        private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
+
+
         [MenuItem("Tools/FrameDebugPos")]
         public static void Create()
         {
             EditorWindow.GetWindow<FrameDebugAnalyzeWindow>();
         }
-        private void OnGUI()
+
+        private void OnEnable()
         {
-            EditorGUILayout.LabelField("Frame" + FrameDebuggerUtility.GetCurrentFramePosition());
+            resultPosition = -1;
+            currentPosition = -1;
+
+            var asset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.utj.malioc.plugin/Editor/UI/UXML/FrameDebuggerAttach.uxml");
+            var ve = asset.CloneTree();
+
+
+            this.resultArea = ve.Q<ScrollView>("ResultArea");
+            this.analyzeBtn = ve.Q<Button>("AnalyzeBtn");
+            this.shaderField = ve.Q<ObjectField>("ShaderProp");
+
+            this.analyzeBtn.clicked += OnClickAnalyzeBtn;
+            this.rootVisualElement.Add(ve);
+
+
+            var selectable = this.shaderField.Q<VisualElement>(null, "unity-object-field__selector");
+            selectable.parent.Remove(selectable);
+        }
+
+        private void Update()
+        {
+            this.currentPosition = FrameDebuggerUtility.GetCurrentFramePosition();
+            this.UpdateResultArea();
+        }
+
+        private void OnClickAnalyzeBtn()
+        {
             var data = FrameDebuggerUtility.GetCurrentData();
-            if(data != null)
+            if (data == null)
             {
-                EditorGUILayout.LabelField(data.shaderName);
-                EditorGUILayout.LabelField(data.passLightMode);
-                EditorGUILayout.LabelField(data.shaderKeywords);
+                return;
             }
+            Shader shader = Shader.Find(data.shaderName);
+            var info = CreateAnalyzedInfo(shader);
+        }
+
+
+        private void UpdateResultArea() {
+            if ( this.resultPosition == this.currentPosition)
+            {
+                return;
+            }
+            this.resultArea.Clear();
+            var data = FrameDebuggerUtility.GetCurrentData();
+            if(data == null)
+            {
+                return;
+            }
+            if(data.frameEventIndex != this.currentPosition-1)
+            {
+                return;
+            }
+            Shader shader = Shader.Find(data.shaderName);
+            if(shader == null) { return; }
+            var info = GetAnalyzedShaderInfo(shader);
+            AppendResult(info, data);
+
+            Debug.Log("this.shaderField. " + this.shaderField.objectType);
+            this.shaderField.objectType = typeof(Shader);
+            this.shaderField.value = shader;
+            //data.shaderKeywords
+        }
+
+        private void AppendResult(AnalyzedShaderInfo info, FrameDebuggerEventData data)
+        {
+            if (info == null)
+            {
+                return;
+            }
+            var keywords = MaliocPluginUtility.KeywordStrToList(data.shaderKeywords);
+            info.GetShaderMatchPrograms(programKeyInfo, keywords);
+            foreach (var key in programKeyInfo)
+            {
+                var shaderProgramInfo = info.GetProgramInfo(key);
+
+                if (key.passIndex == data.shaderPassIndex)
+                {
+                    var ve = ShaderInfolElement.Create(key, shaderProgramInfo, info.GetPassInfos());
+                    resultArea.Add(ve);
+                    this.resultPosition = this.currentPosition;
+                    this.Repaint();
+                    break;
+                }
+            }
+
+        }
+
+        private AnalyzedShaderInfo GetAnalyzedShaderInfo(Shader shader)
+        {
+            AnalyzedShaderInfo info = null;
+            if (this.shaderInfos == null)
+            {
+                this.shaderInfos = new Dictionary<Shader, AnalyzedShaderInfo>();
+            }
+            if( this.shaderInfos.TryGetValue(shader,out info)) {
+                return info;
+            }
+            info = ShaderDbUtil.LoadShaderData(shader);
+            if (info != null)
+            {
+                this.shaderInfos[shader] = info;
+            }
+            return info;
+        }
+        private AnalyzedShaderInfo CreateAnalyzedInfo(Shader shader)
+        {
+            AnalyzedShaderInfo info = null;
+            var compiled = CompileShaderUtil.GetCompileShaderText(shader);
+            var parser = new CompiledShaderParser(compiled);
+            info = ShaderDbUtil.Create(shader, parser);
+            if (info != null )
+            {
+                this.shaderInfos[shader] = info;
+            }
+            return info;
         }
     }
 
-    class FrameDebuggerUtility
+    public class FrameDebuggerUtility
     {
         private static PropertyInfo framePositionProperty;
         private static ReflectionType frameDebuggeUtil;

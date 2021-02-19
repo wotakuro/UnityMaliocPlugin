@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <uie:ObjectField label="Shader" name="ShaderProp" allow-scene-objects="false" focusable="false" />
+    <ui:Button text="Analyze Shader" name="AnalyzeBtn" style="width: 120px;" />
+    <ui:ScrollView name="ResultArea">
+        <ui:VisualElement style="margin-left: 10px; flex-direction: row;" />
+    </ui:ScrollView>
+</ui:UXML>

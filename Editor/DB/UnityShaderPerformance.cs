@@ -10,7 +10,7 @@ using UTJ.MaliocPlugin.Result;
 namespace UTJ.MaliocPlugin.DB
 {
     [Serializable]
-    public class ShaderInfo
+    public class AnalyzedShaderInfo
     {
         [SerializeField]
         public string shaderName;
@@ -88,13 +88,13 @@ namespace UTJ.MaliocPlugin.DB
             string str = JsonUtility.ToJson(this);
             File.WriteAllText(path, str);
         }
-        public static ShaderInfo LoadFromFile(string path) { 
+        public static AnalyzedShaderInfo LoadFromFile(string path) { 
             if(!File.Exists(path))
             {
                 return null;
             }
             string str = File.ReadAllText(path);
-            var obj =  JsonUtility.FromJson<ShaderInfo>(str);
+            var obj =  JsonUtility.FromJson<AnalyzedShaderInfo>(str);
             obj.CreateDictionary();
             return obj;
         }
@@ -103,6 +103,7 @@ namespace UTJ.MaliocPlugin.DB
         public void GetShaderMatchPrograms(List<ShaderKeywordInfo>  result,
             List<string> keywords)
         {
+            result.Clear();
             foreach (var kvs in performanceInfoByKeyword) {
                 var keyInfo = kvs.Key;
                 var isMatch = MaliocPluginUtility.IsMatchKeyword(keyInfo.globalKeyword, keyInfo.localKeyword, keywords);
