@@ -40,14 +40,15 @@ namespace UTJ.MaliocPlugin.UI
 
         private ShaderProgramInfoElement(ShaderProgramPerfInfo info)
         {
-            this.Add(CreateMainShaderInfoTable(info));
             this.Add(CreateCycleTable(info));
+            this.Add(CreateMainShaderInfoTable(info));
             this.Add(CreateShaderProperties(info));
         }
         private VisualElement CreateCycleTable(ShaderProgramPerfInfo info)
         {
             Foldout fold = new Foldout();
             fold.text = "Cycle Info";
+            fold.name = "CycleInfo";
             var val = new string[4, info.pipelines.Length + 1];
             for (int i = 0; i < info.pipelines.Length; ++i)
             {
@@ -68,6 +69,7 @@ namespace UTJ.MaliocPlugin.UI
         {
             Foldout fold = new Foldout();
             fold.text = "Main Info";
+            fold.name = "MainInfo";
             var val = new string[2, 4];
             val[0, 0] = "Work register";
             val[0, 1] = "uniform register";
@@ -84,6 +86,7 @@ namespace UTJ.MaliocPlugin.UI
         {
             Foldout fold = new Foldout();
             fold.text = "Shader Property";
+            fold.name = "ShaderInfo";
 
             var val = new string[2, 6];
             val[0, 0] = "Has uniform computation";

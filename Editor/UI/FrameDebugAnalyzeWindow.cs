@@ -23,7 +23,7 @@ namespace UTJ.MaliocPlugin.UI
         private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
 
 
-        [MenuItem("Tools/FrameDebugPos")]
+        [MenuItem("Tools/MaliocPlugin/FrameDebugPos")]
         public static void Create()
         {
             EditorWindow.GetWindow<FrameDebugAnalyzeWindow>();
