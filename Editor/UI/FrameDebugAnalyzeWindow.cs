@@ -22,6 +22,7 @@ namespace UTJ.MaliocPlugin.UI
         private Dictionary<Shader, AnalyzedShaderInfo> shaderInfos;
         private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
 
+        private Dictionary<string, bool> foldoutInfo = new Dictionary<string, bool>();
 
         [MenuItem("Tools/MaliocPlugin/FrameDebugPos")]
         public static void Create()
@@ -88,9 +89,10 @@ namespace UTJ.MaliocPlugin.UI
             var info = GetAnalyzedShaderInfo(shader);
             AppendResult(info, data);
 
-            Debug.Log("this.shaderField. " + this.shaderField.objectType);
             this.shaderField.objectType = typeof(Shader);
             this.shaderField.value = shader;
+
+            
             //data.shaderKeywords
         }
 
@@ -108,13 +110,61 @@ namespace UTJ.MaliocPlugin.UI
 
                 if (key.passIndex == data.shaderPassIndex)
                 {
-                    var ve = ShaderInfolElement.Create(key, shaderProgramInfo, info.GetPassInfos());
-                    resultArea.Add(ve);
+                    InitShaderElementInfo(shaderProgramInfo);
+
                     this.resultPosition = this.currentPosition;
                     this.Repaint();
                     break;
                 }
             }
+        }
+        private void InitShaderElementInfo(ShaderProgramInfo info)
+        {
+            var positionPerf = InitShaderProgramElement("Vertex(Position)",info.positionVertPerf);
+            var varyingPerf = InitShaderProgramElement("Vertex(Varying)",info.varyingVertPerf);
+            var fragPerf = InitShaderProgramElement("Fragment",info.fragPerf);
+
+            this.resultArea.Add(positionPerf);
+            this.resultArea.Add(varyingPerf);
+            this.resultArea.Add(fragPerf);
+        }
+
+        private VisualElement InitShaderProgramElement(string name,ShaderProgramPerfInfo info)
+        {
+            Foldout fold = new Foldout();
+            fold.name = name;
+            fold.text = name;
+            var ve = ShaderProgramInfoElement.Create(info);
+            ve.style.marginLeft = 20;
+
+            var cycleInfo = ve.Q<Foldout>("CycleInfo");
+            var mainInfo = ve.Q<Foldout>("MainInfo");
+            var shaderInfo = ve.Q<Foldout>("ShaderInfo");
+            // InitFold
+            InitShaderInfoFoldout(fold, name, true);
+
+            InitShaderInfoFoldout(cycleInfo, name + "-Cycle", true);
+            InitShaderInfoFoldout(mainInfo, name + "-Main", false);
+            InitShaderInfoFoldout(shaderInfo, name + "-Shader", false);
+
+            fold.Add(ve);
+            return fold;
+        }
+        private void InitShaderInfoFoldout(Foldout fold , string name,bool defaultVal)
+        {
+            bool val ;
+            if (this.foldoutInfo.TryGetValue(name, out val))
+            {
+                fold.value = val;
+            }
+            else
+            {
+                fold.value = defaultVal;
+            }
+            fold.RegisterValueChangedCallback((changed) =>
+            {
+                this.foldoutInfo[name] = changed.newValue;
+            });
 
         }
 

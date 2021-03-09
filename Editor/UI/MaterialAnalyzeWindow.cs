@@ -15,7 +15,7 @@ namespace UTJ.MaliocPlugin.UI
         private List<ShaderKeywordInfo> programKeyInfo = new List<ShaderKeywordInfo>();
         private ScrollView resultArea;
 
-        [MenuItem("Tools/MaliocPlugin/MaterialAnalyze")]
+//        [MenuItem("Tools/MaliocPlugin/MaterialAnalyze")]
         public static void Create()
         {
             EditorWindow.GetWindow<MaterialAnalyzeWindow>();

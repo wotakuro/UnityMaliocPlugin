@@ -11,7 +11,7 @@ namespace UTJ.MaliocPlugin.UI
     {
         private Shader shader;
         string res;
-        [MenuItem("Tools/ShaderAnalyze")]
+        //[MenuItem("Tools/ShaderAnalyze")]
         public static void Create()
         {
             EditorWindow.GetWindow<ShaderAnalyzeWindow>();

@@ -9,7 +9,7 @@ namespace UTJ.MaliocPlugin.UI
 {
     public class ShaderInfolElement : VisualElement
     {
-        private static int FoldMarginLeft = 20;
+        private static readonly int FoldMarginLeft = 20;
 
         public static ShaderInfolElement Create( ShaderKeywordInfo keywordInfo,
             ShaderProgramInfo programinfo,
